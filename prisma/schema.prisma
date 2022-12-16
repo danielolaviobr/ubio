@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model HeartBeat {
+  mongoId   String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String
+  group     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status    Status   @default(ACTIVE)
+  meta      Json?
+
+  @@unique([id, group])
+  @@index([group, status])
+  @@index([status, updatedAt(sort: Desc)])
+}
+
+enum Status {
+  ACTIVE
+  STALE
+  DELETED
+}
